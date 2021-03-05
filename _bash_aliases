@@ -1,0 +1,214 @@
+#Env Exports
+    export PATH=$PATH:/home/sam/scripts
+    export PATH=$PATH:/home/sam/.local/bin
+    export PATH=$PATH:/usr/local/private/work/oasis/scripts:/usr/local/private/work/scripts
+    export EDITOR=vim
+    stty -ixon #stop vim freeze
+    . ~/scripts/z.sh
+
+
+# Package Mgn (DEB)
+inst_cmd=apt
+if [[ $(type -P "$inst_cmd") ]]; then
+    alias in='sudo apt install'
+    alias meh='sudo apt remove '
+    alias ?='apt search'
+    alias in?='dpkg -l | grep '
+    alias updt='sudo apt update && sudo apt upgrade'
+fi
+
+# Package Mgn (ARCH)
+inst_cmd=pacman
+if [[ $(type -P "$inst_cmd") ]]; then
+    alias in='sudo pacman --color always -S'
+    alias updt='sudo pacman --color always -Syu'
+    alias meh='sudo pacman --color always -Rc'
+    alias ?='pacman --color always -Ss'
+    alias in?='pacman --color always -Qs'
+    #alias aur='yaourt --noconfirm'
+    alias aur='yaourt'
+fi
+
+# BASH history
+    HISTSIZE=10000
+    HISTFILESIZE=64000
+    HISTCONTROL=ignoreboth
+    shopt -s histappend
+
+# Command Shortcuts
+    alias ..='cd ..'
+    alias ...='cd ../..'
+    alias ....='cd ../../..'
+    alias .....='cd ../../../..'
+    #alias h="history | awk 'BEGIN { FS = "  " }{ print $2 }' | peco"
+    alias h="history | peco"
+    alias g="grep"
+    alias d="drive"
+    alias x="xsel -ib"
+    alias m="tldr"
+    alias r="ranger"
+    alias t="tmux -2"
+    alias v="vim"
+
+    alias zz="z | grep $@"
+    alias ky="cd /usr/local/private/work/keys"
+    alias wk="cd /home/sam/wkdir"
+    alias nt="vim ~/.sync/backups/notes.txt"
+    alias si="sudo vim"
+    alias vi="vim"
+    alias pw="vault; cd /usr/local/private"
+    alias sl="ls -h --color=auto"
+
+    # Git
+    alias co="git checkout"
+    alias st="git status"
+    alias br="git branch"
+    alias ad="git add"
+    alias cm="git commit -m"
+    alias h-git='git log --pretty=format:"%ad %h%x09%an%x09%x09%s" --date=short'
+
+    alias rld="source $HOME/.bashrc"
+    alias cat="bat"
+    alias lla="ls -h -l -a --color=auto"
+    alias fin="cd; vault umount"
+    alias ipy="python -c 'import IPython; IPython.terminal.ipapp.launch_new_instance()'" ## always being sure that the ipython instance always belongs to the virtualenv's python version.
+    alias png="sudo ping 8.8.8.8"
+    alias ssh-x='ssh -c arcfour,blowfish-cbc -XC'
+    alias wifi="sudo wifi-menu -o"
+    alias ptop="sudo powertop"
+    alias tmux="tmux -2"
+    alias clip="xsel -b <"
+
+
+# Functions
+    df(){
+        find -name "$@"
+    }
+
+    in_oasislmf(){
+        branch=$1
+        pip uninstall oasislmf -y
+        pip install -v git+{https,ssh}://git@github.com/OasisLMF/OasisLMF.git@${branch}#egg=oasislmf
+    }
+    # create python venv
+    mkpy(){
+        local PY_VENV_DIR=/home/sam/repos/venv/
+        if [ -z "$1" ]; then
+            echo "No argument supplied set name for venv dir"
+        fi
+
+        #1 check if selected dir exisits fail if true
+        if [ -d "$PY_VENV_DIR$1" ]; then
+            echo "path env $1 exisits, must be deleted first with 'rmpy <name>'"
+            return 1
+        fi
+
+        #2 guard against names containing '.'
+        if [[ $1 == *.* ]] ; then
+            echo "venv name must not contain '.'"
+            return 1
+        fi
+
+        #3 Create VENV
+        python3.8 -m venv $PY_VENV_DIR$1
+
+        # Cat new alias into
+        echo 'alias '$1'="source '$PY_VENV_DI$1'/bin/activate"' >> $HOME/.bash_aliases
+        . $HOME/.bash_aliases
+        echo "activate using the alias '$1'"
+
+    }
+
+    # delete python venv
+    rmpy(){
+        local PY_VENV_DIR=/home/sam/repos/venv/
+        if [ -z "$1" ]; then
+            echo "No argument supplied set name for venv dir"
+        fi
+
+        #1 check if selected dir exisits fail if true
+        if [ ! -d "$PY_VENV_DIR$1" ]; then
+            echo "path env $1 dosn't exisit, nothing to delete"
+            return 1
+        fi
+
+        #2 guard against names containing '.'
+        if [[ $1 == *.* ]] ; then
+            echo "venv name must not contain '.'"
+            return 1
+        fi
+
+        # Delete and remove alias
+        rm -rf $PY_VENV_DIR$1
+        sed -i  "/alias\ $1/d" ~/.bash_aliases
+    }
+
+
+# Docker Helper
+    alias dps="docker ps"
+    dcd(){
+        # Jump into a docker container
+        docker exec -it $1 bash
+    }
+
+    dls(){
+        # list docker process
+        docker ps
+    }
+
+    di(){
+        # list docker imgs
+        docker images
+    }
+
+    dl(){
+        docker logs -f $1
+    }
+
+    dexec(){
+        # run and bash into image
+        docker run --entrypoint /bin/bash -i -t $1
+    }
+
+    dwipe(){
+        echo 'stop all containers'
+        docker ps -a -q | xargs -r docker stop
+
+        echo 'remove dangling images'
+        docker images -f 'dangling=true' -q | xargs -r docker rmi --force
+
+        echo 'Delete containers'
+        docker ps -aq | xargs -r docker rm
+
+        #echo 'remove dev images'
+        #docker images | grep dev | awk 'BEGIN { FS = "[ \t\n]+" }{ print $3 }' | xargs -r docker rmi --force
+
+        echo 'Delete unused volumes'
+        docker volume ls -qf dangling=true | xargs -r docker volume rm\
+
+        echo 'delete Docker networks'
+        docker network prune -y
+    }
+    dwn(){
+        docker_search=$1
+        container_list=$(docker ps  | grep $docker_search | awk 'BEGIN { FS = "[ \t\n]+" }{ print $1 }')
+
+        echo 'docker down'
+        docker stop $container_list
+        echo 'docker rm'
+        docker rm $container_list
+    }
+    # remove docker containers matching regex
+    drm(){
+        docker_search=$1
+        container_list=$(docker images  | grep $docker_search | awk 'BEGIN { FS = "[ \t\n]+" }{ print $3 }')
+        echo $container_list | xargs -r docker rmi --force
+    }
+
+complete -C completer_oasislmf oasislmf
+
+alias 3py="source /home/sam/repos/venv/py3/bin/activate"
+alias lat="source /home/sam/repos/venv/lat/bin/activate"
+alias api="source /home/sam/repos/venv/api/bin/activate"
+alias tpy="source /home/sam/repos/venv/tpy/bin/activate"
+alias test-fmpy="source /home/sam/repos/venv/test-fmpy/bin/activate"

@@ -1,0 +1,106 @@
+Xursor.theme:    Vanilla-DMZ-AA
+
+! urxvt fix Crtl + arrow movment 
+URxvt.keysym.Control-Up:     \033[1;5A
+URxvt.keysym.Control-Down:   \033[1;5B
+URxvt.keysym.Control-Left:   \033[1;5D
+URxvt.keysym.Control-Right:  \033[1;5C
+
+URxvt.keysym.C-S-Up:         \033[1;6A
+URxvt.keysym.C-S-Down:       \033[1;6B
+URxvt.keysym.C-S-Left:       \033[1;6D
+URxvt.keysym.C-S-Right:      \033[1;6C
+
+URxvt*iso14755: False
+
+
+!urxvt color scheme:
+
+URxvt*background: #2B2B2B
+URxvt*foreground: #DEDEDE
+
+URxvt*colorUL: #86a2b0
+
+! black
+URxvt*color0  : #2E3436
+URxvt*color8  : #555753
+! red
+URxvt*color1  : #CC0000
+URxvt*color9  : #EF2929
+! green
+URxvt*color2  : #4E9A06
+URxvt*color10 : #8AE234
+! yellow
+URxvt*color3  : #C4A000
+URxvt*color11 : #FCE94F
+! blue
+URxvt*color4  : #3465A4
+URxvt*color12 : #729FCF
+! magenta
+URxvt*color5  : #75507B
+URxvt*color13 : #AD7FA8
+! cyan
+URxvt*color6  : #06989A
+URxvt*color14 : #34E2E2
+! white
+URxvt*color7  : #D3D7CF
+URxvt*color15 : #EEEEEC
+
+!urxvt fonts: 
+
+#Default Laptop Res
+URxvt*font: xft:Monospace:pixelsize=14
+URxvt*boldFont: xft:Monospace:bold:pixelsize=14
+URxvt.font-size.step: 2
+
+! fix missing underscore
+URxvt.lineSpace: 1
+URxvt.letterSpace: -1
+
+
+!urxvt extensions:
+URxvt.perl-ext-common:      default,clipboard,url-select,keyboard-select,vtwheel,font-size
+
+!enabling clickable links:
+!URxvt.url-select.launcher:  firefox
+ URxvt.url-select.launcher:  chromium
+ URxvt.url-select.underline: true
+ URxvt.keysym.M-u:           perl:url-select:select_next
+ URxvt.keysym.M-Escape:      perl:keyboard-select:activate
+ URxvt.keysym.M-s:           perl:keyboard-select:search
+ URxvt.matcher.button:   1 
+
+
+!urxvt Scaling FontSize
+ URxvt.keysym.C-equal:     perl:font-size:increase
+ URxvt.keysym.C-minus:   perl:font-size:decrease
+ URxvt.keysym.C-S-plus:   perl:font-size:incglobal
+ URxvt.keysym.C-S-underscore: perl:font-size:decglobal
+
+!urxvt Paste key
+   URxvt.keysym.M-c:   perl:clipboard:copy
+   URxvt.keysym.M-C-v:   perl:clipboard:paste
+   URxvt.keysym.C-V:   perl:clipboard:paste
+   URxvt.keysym.M-v: perl:clipboard:paste_escaped
+
+!urxvt scrolling options and cursor style:
+
+URxvt*saveLines: 12000
+URxvt*scrollstyle:plain
+URxvt*scrollBar: false
+URxvt*cursorBlink: false
+URxvt*cursorUnderline: false
+URxvt*cursorColor: #CC0000
+
+! urxvt tabs settings:
+
+URxvt.tabbed.tabbar-fg:     3
+URxvt.tabbed.tabbar-bg:     0
+URxvt.tabbed.tab-fg:        3
+URxvt.tabbed.tab-bg:        4
+URxvt.tabbed.autohide:      yes
+URxvt.tabbed.new-button:    no
+URxvt.tabbed.title:         no
+
+
+
